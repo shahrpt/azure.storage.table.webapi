@@ -24,22 +24,13 @@ namespace PoC.Azure.Storage.WebApi
 
         public async Task<AppConfigEntity> RetrieveAsync(string envName)
         {
-            CloudStorageAccount account = new CloudStorageAccount(
-    new Microsoft.WindowsAzure.Storage.Auth.StorageCredentials(
-        "<storage-accountname>",
-        "<storage-accountkey>"), true);
+            var table = await GetCloudTable();
 
-
-            // Create the table client
-            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
-
-            // Create the CloudTable object that represents the "items" table
-            CloudTable table = client.GetTableReference("items");
             TableQuery<AppConfigEntity> itemStockQuery = new TableQuery<AppConfigEntity>().Where(TableQuery.GenerateFilterCondition("ConfigVal", QueryComparisons.Equal, envName));
+            //return table.ExecuteQuerySegmentedAsync(itemStockQuery, null);
 
-            var rawMtlStock = table.ExecuteQuery(itemStockQuery);
-            //var retrieveOperation = TableOperation.Retrieve<AppConfigEntity>(envName);
-            //return await ExecuteTableOperation(retrieveOperation) as AppConfigEntity;
+            return new AppConfigEntity();
+           
         }
         public async Task<AppConfigEntity> InsertOrMergeAsync(AppConfigEntity entity)
         {
@@ -61,7 +52,7 @@ namespace PoC.Azure.Storage.WebApi
         {
             var storageAccount = CloudStorageAccount.Parse(_configuration["StorageConnectionString"]);
             var tableClient = storageAccount.CreateCloudTableClient();
-            var table = tableClient.GetTableReference(TableName);
+            var table = tableClient.GetTableReference(_TableName);
             await table.CreateIfNotExistsAsync();
             return table;
         }

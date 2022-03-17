@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PoC.Azure.Storage.WebApi
 {
-    public class IAppConfigService
+    public interface IAppConfigService
     {
         Task<AppConfigEntity> RetrieveAsync(string envName);
         Task<AppConfigEntity> InsertOrMergeAsync(AppConfigEntity entity);
