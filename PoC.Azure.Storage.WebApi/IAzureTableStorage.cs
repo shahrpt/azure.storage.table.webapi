@@ -5,12 +5,18 @@ using System.Threading.Tasks;
 
 namespace PoC.Azure.Storage.WebApi
 {
-    public interface IAzureTableStorage<T> where T : ITableEntity, IAzureTableStorage<T>, new()
+    public interface IAzureTableStorage<T> where T : AzureTableEntity, new()
     {
-        public Task<T> Get(Guid id);
-        public Task<List<T>> GetMany(TableQuery<T> query);
-        public Task<T> InsertOrUpdateAsync(T entity);
-        public Task<T> Delete(T entity);
-        public void BatchInsert(TableBatchOperation batchOperation);
+        Task Delete(string partitionKey, string rowKey);
+        Task<T> GetItem(long partitionKey, long rowKey);
+        Task<T> GetItem(string partitionKey, string rowKey);
+        Task<List<T>> GetList();
+        Task<List<T>> GetList(string partitionKey);
+        Task<List<T>> GetList(long partitionKey);
+        Task Insert(T item);
+        Task Update(T item);
+    }
+    public class AzureTableEntity : TableEntity
+    {
     }
 }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using PoC.Azure.Storage.WebApi.Models;
+using System.Security.Claims;
 
 namespace PoC.Azure.Storage.WebApi.Controllers
 {
@@ -14,29 +15,49 @@ namespace PoC.Azure.Storage.WebApi.Controllers
     [Route("[controller]")]
     public class AppConfigController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
 
-        private readonly ILogger<AppConfigController> _logger;
+        private readonly IAppConfigService _appConfigService;
 
-        public AppConfigController(ILogger<AppConfigController> logger)
+        public AppConfigController(IAppConfigService appConfigService)
         {
-            _logger = logger;
+            _appConfigService = appConfigService;
         }
 
-        [HttpPost]
-        public IEnumerable<AppConfigEntity> Get(string envName, string storage)
+        // GET: AppConfig
+        public async Task<IList<AppConfigEntity>> Index()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new AppConfigEntity
+            string _userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return await _appConfigService.GetAllAsync(_userId);
+        }
+        
+        // GET: AppConfig/Check
+        public async Task<IActionResult> Check(long? id)
+        {
+            if (id == null)
             {
-                /*Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]*/
-            })
-            .ToArray();
+                return NotFound();
+            }
+            string _userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            try
+            {
+                await _appConfigService.CheckAsync(_userId, id.Value);
+            }
+            catch (Exception)
+            {
+                //Log error and notify user
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        // POST: AppConfig/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(long id)
+        {
+            string _userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            await _appConfigService.DeleteAsync(_userId, id);
+            return RedirectToAction(nameof(Index));
         }
     }
+
 }

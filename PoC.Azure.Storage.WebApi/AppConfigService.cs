@@ -56,5 +56,35 @@ namespace PoC.Azure.Storage.WebApi
             await table.CreateIfNotExistsAsync();
             return table;
         }
+
+        public Task<IList<AppConfigEntity>> GetAllAsync(string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<AppConfigEntity> GetDetailsAsync(string userId, long id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task CheckAsync(string userId, long id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddAsync(string userId, AppConfigEntity productInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateAsync(string userId, AppConfigEntity productInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteAsync(string userId, long id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
