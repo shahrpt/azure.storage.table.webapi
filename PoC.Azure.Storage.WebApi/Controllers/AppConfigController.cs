@@ -24,40 +24,14 @@ namespace PoC.Azure.Storage.WebApi.Controllers
         }
 
         // GET: AppConfig
-        public async Task<IList<AppConfigEntity>> Index()
+        public async Task<IList<AzureTableEntity>> Index(string accStorage, string evnName)
         {
+            if (string.IsNullOrEmpty(accStorage) || string.IsNullOrEmpty(evnName))
+                return null;
             string _userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return await _appConfigService.GetAllAsync(_userId);
+            return await _appConfigService.GetAllAppConfigsAsync(accStorage, evnName);
         }
         
-        // GET: AppConfig/Check
-        public async Task<IActionResult> Check(long? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            string _userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            try
-            {
-                await _appConfigService.CheckAsync(_userId, id.Value);
-            }
-            catch (Exception)
-            {
-                //Log error and notify user
-            }
-            return RedirectToAction(nameof(Index));
-        }
-
-        // POST: AppConfig/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(long id)
-        {
-            string _userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            await _appConfigService.DeleteAsync(_userId, id);
-            return RedirectToAction(nameof(Index));
-        }
     }
 
 }

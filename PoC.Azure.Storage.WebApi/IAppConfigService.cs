@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PoC.Azure.Storage.WebApi
 {
-    public interface IAppConfigService
+    /*public interface IAppConfigService
     {
         Task<IList<AppConfigEntity>> GetAllAsync(string userId);
         Task<AppConfigEntity> GetDetailsAsync(string userId, long id);
@@ -14,5 +14,11 @@ namespace PoC.Azure.Storage.WebApi
         Task AddAsync(string userId, AppConfigEntity productInfo);
         Task UpdateAsync(string userId, AppConfigEntity productInfo);
         Task DeleteAsync(string userId, long id);
+    }*/
+    public interface IAppConfigService
+    {
+        Task<List<AzureTableEntity>> GetAllAppConfigsAsync(string accountStorage, string evnName);
+        Task<AzureTableEntity> GetAppConfigAsync(string partionKey, string rowKey);
+        Task AddAsync(string productId, AzureTableEntity appConfig);
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PoC.Azure.Storage.WebApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,16 @@ namespace PoC.Azure.Storage.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddSingleton<IAppConfigService, AppConfigService>();
+            services.AddScoped<IAppConfigService, AppConfigService>();
+            /*services.AddScoped<IAzureTableStorage<AzureTableEntity>>(factory =>
+            {
+                return new AzureTableStorage<AzureTableEntity>(
+                    new AzureTableSettings(
+                        storageConnectionString: "",
+                        tableName: ""));
+            });*/
+            //services.AddSingleton<IAzureTableStorage<AzureTableEntity>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

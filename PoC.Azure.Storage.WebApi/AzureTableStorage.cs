@@ -17,43 +17,20 @@ namespace PoC.Azure.Storage.WebApi
             this.settings = settings;
         }
 
-        public async Task<List<T>> GetList()
+        public AzureTableStorage()
         {
-            //Table
-            CloudTable table = await GetTableAsync();
-
-            //Query
-            TableQuery<T> query = new TableQuery<T>();
-
-            List<T> results = new List<T>();
-            TableContinuationToken continuationToken = null;
-            do
-            {
-                TableQuerySegment<T> queryResults =
-                    await table.ExecuteQuerySegmentedAsync(query, continuationToken);
-
-                continuationToken = queryResults.ContinuationToken;
-                results.AddRange(queryResults.Results);
-
-            } while (continuationToken != null);
-
-            return results;
         }
 
-        public async Task<List<T>> GetList(long partitionKey)
-        {
-            return await GetList(partitionKey.ToString());
-        }
-
-        public async Task<List<T>> GetList(string partitionKey)
+       
+        private async Task<List<T>> GetListInner(string accountStorage, string evnName)
         {
             //Table
-            CloudTable table = await GetTableAsync();
+            CloudTable table = await GetTableAsync(accountStorage);
 
             //Query
             TableQuery<T> query = new TableQuery<T>()
                                         .Where(TableQuery.GenerateFilterCondition("PartitionKey",
-                                                QueryComparisons.Equal, partitionKey));
+                                                QueryComparisons.Equal, evnName));
 
             List<T> results = new List<T>();
             TableContinuationToken continuationToken = null;
@@ -70,6 +47,7 @@ namespace PoC.Azure.Storage.WebApi
 
             return results;
         }
+        
         public async Task<T> GetItem(long partitionKey, long rowKey)
         {
             return await GetItem(partitionKey.ToString(), rowKey.ToString());
@@ -78,7 +56,7 @@ namespace PoC.Azure.Storage.WebApi
         public async Task<T> GetItem(string partitionKey, string rowKey)
         {
             //Table
-            CloudTable table = await GetTableAsync();
+            CloudTable table = await GetTableAsync("");
 
             //Operation
             TableOperation operation = TableOperation.Retrieve<T>(partitionKey, rowKey);
@@ -92,7 +70,7 @@ namespace PoC.Azure.Storage.WebApi
         public async Task Insert(T item)
         {
             //Table
-            CloudTable table = await GetTableAsync();
+            CloudTable table = await GetTableAsync("");
 
             //Operation
             TableOperation operation = TableOperation.Insert(item);
@@ -104,7 +82,7 @@ namespace PoC.Azure.Storage.WebApi
         public async Task Update(T item)
         {
             //Table
-            CloudTable table = await GetTableAsync();
+            CloudTable table = await GetTableAsync("");
 
             //Operation
             TableOperation operation = TableOperation.InsertOrReplace(item);
@@ -119,7 +97,7 @@ namespace PoC.Azure.Storage.WebApi
             T item = await GetItem(partitionKey, rowKey);
 
             //Table
-            CloudTable table = await GetTableAsync();
+            CloudTable table = await GetTableAsync("");
 
             //Operation
             TableOperation operation = TableOperation.Delete(item);
@@ -134,16 +112,22 @@ namespace PoC.Azure.Storage.WebApi
 
         private readonly AzureTableSettings settings;
 
-        private async Task<CloudTable> GetTableAsync()
+        private async Task<CloudTable> GetTableAsync(string accountStorage)
         {
             //Client
-            CloudTableClient tableClient = CloudStorageAccount.Parse(settings.StorageConnectionString).CreateCloudTableClient();
+            CloudTableClient tableClient = CloudStorageAccount.Parse(accountStorage).CreateCloudTableClient();
 
             //Table
-            CloudTable table = tableClient.GetTableReference(settings.TableName);
+            CloudTable table = tableClient.GetTableReference("applicationconfiguration");
             await table.CreateIfNotExistsAsync();
 
             return table;
+        }
+
+
+        public async Task<List<T>> GetList(string accountStorage, string evnName)
+        {
+            return await GetListInner(accountStorage, evnName);
         }
 
         #endregion
