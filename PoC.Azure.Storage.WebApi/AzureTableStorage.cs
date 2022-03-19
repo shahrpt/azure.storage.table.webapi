@@ -17,31 +17,6 @@ namespace PoC.Azure.Storage.WebApi
         {
             
         }
-        private async Task<List<T>> GetListInner(string accountStorage, string evnName)
-        {
-            //Table
-            CloudTable table = await GetTableAsync(accountStorage);
-
-            //Query
-            TableQuery<T> query = new TableQuery<T>()
-                                        .Where(TableQuery.GenerateFilterCondition("ConfigVal",
-                                                QueryComparisons.Equal, evnName));
-
-            List<T> results = new List<T>();
-            TableContinuationToken continuationToken = null;
-            do
-            {
-                TableQuerySegment<T> queryResults =
-                    await table.ExecuteQuerySegmentedAsync(query, continuationToken);
-
-                continuationToken = queryResults.ContinuationToken;
-
-                results.AddRange(queryResults.Results);
-
-            } while (continuationToken != null);
-
-            return results;
-        }
         
         public async Task<T> GetItem(long partitionKey, long rowKey)
         {
@@ -104,9 +79,31 @@ namespace PoC.Azure.Storage.WebApi
         #endregion
 
         #region " Private "
+        private async Task<List<T>> GetListInner(string accountStorage, string evnName)
+        {
+            //Table
+            CloudTable table = await GetTableAsync(accountStorage);
 
-        private readonly AzureTableSettings settings;
+            //Query
+            TableQuery<T> query = new TableQuery<T>()
+                                        .Where(TableQuery.GenerateFilterCondition("ConfigVal",
+                                                QueryComparisons.Equal, evnName));
 
+            List<T> results = new List<T>();
+            TableContinuationToken continuationToken = null;
+            do
+            {
+                TableQuerySegment<T> queryResults =
+                    await table.ExecuteQuerySegmentedAsync(query, continuationToken);
+
+                continuationToken = queryResults.ContinuationToken;
+
+                results.AddRange(queryResults.Results);
+
+            } while (continuationToken != null);
+
+            return results;
+        }
         private async Task<CloudTable> GetTableAsync(string accountStorage)
         {
             //Client

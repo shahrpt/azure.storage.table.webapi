@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PoC.Azure.Storage.WebApi.Models
 {
-    public class AppConfigEntity : TableEntity
+    public class AppConfigEntity : AzureTableEntity
     {
         public AppConfigEntity()
         {

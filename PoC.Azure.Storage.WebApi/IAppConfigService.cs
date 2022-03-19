@@ -17,8 +17,6 @@ namespace PoC.Azure.Storage.WebApi
     }*/
     public interface IAppConfigService
     {
-        Task<List<AzureTableEntity>> GetAllAppConfigsAsync(string accountStorage, string evnName);
-        Task<AzureTableEntity> GetAppConfigAsync(string partionKey, string rowKey);
-        Task AddAsync(string productId, AzureTableEntity appConfig);
+        Task<List<AppConfigEntity>> GetAllAppConfigsAsync(string accountStorage, string evnName);
     }
 }

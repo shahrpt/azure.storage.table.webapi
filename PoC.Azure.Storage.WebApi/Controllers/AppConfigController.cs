@@ -9,6 +9,7 @@ using Microsoft.WindowsAzure.Storage.Table;
 using PoC.Azure.Storage.WebApi.Models;
 using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace PoC.Azure.Storage.WebApi.Controllers
 {
@@ -32,13 +33,28 @@ namespace PoC.Azure.Storage.WebApi.Controllers
         /// <param name="storage">storage name</param>
         /// <param name="env">evnviroment name</param>
         /// <returns></returns>
-        public async Task<IList<AzureTableEntity>> Index(string storage, string env)
+        public async Task<IActionResult> Index(string storage, string env)
         {
-            if (string.IsNullOrEmpty(storage) || string.IsNullOrEmpty(env))
+            try
+            {
+                if (string.IsNullOrEmpty(storage) || string.IsNullOrEmpty(env))
+                    return null;
+                var storageConStr = _configuration[$"{storage.ToLower()}:connectionString"].ToString();
+
+                var retVal = await _appConfigService.GetAllAppConfigsAsync(storageConStr, env);
+
+                var jsonResult = JsonConvert.SerializeObject(retVal);
+
+                if (jsonResult != null)
+                {
+                    return Ok(jsonResult);
+                }
+                return NotFound();
+            }catch(Exception ex)
+            {
+
                 return null;
-            var storageConStr = _configuration[$"{storage.ToLower()}:connectionString"].ToString();
-            
-            return await _appConfigService.GetAllAppConfigsAsync(storageConStr, env);
+            }
         }
         
     }

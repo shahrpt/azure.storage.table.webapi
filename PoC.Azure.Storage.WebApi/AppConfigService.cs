@@ -9,22 +9,17 @@ using System.Threading.Tasks;
 
 namespace PoC.Azure.Storage.WebApi
 {
+
     public class AppConfigService : IAppConfigService
     {
       
-        private readonly IConfiguration _configuration;
-        private readonly IAzureTableStorage<AzureTableEntity> _repository;
-        public AppConfigService(IConfiguration configuration, IAzureTableStorage<AzureTableEntity> repository)
-        {
-            _configuration = configuration;
-            _repository = new AzureTableStorage<AzureTableEntity>();
-        }
+        private readonly IAzureTableStorage<AppConfigEntity> _repository;
         public AppConfigService()
         {
-            _repository = new AzureTableStorage<AzureTableEntity>();
+            _repository = new AzureTableStorage<AppConfigEntity>();
         }
 
-        public Task<AzureTableEntity> GetDetailsAsync(string userId, long id)
+        public Task<AppConfigEntity> GetDetailsAsync(string userId, long id)
         {
             throw new NotImplementedException();
         }
@@ -34,12 +29,12 @@ namespace PoC.Azure.Storage.WebApi
             throw new NotImplementedException();
         }
 
-        public Task AddAsync(string userId, AzureTableEntity productInfo)
+        public Task AddAsync(string userId, AppConfigEntity productInfo)
         {
             throw new NotImplementedException();
         }
 
-        public Task UpdateAsync(string userId, AzureTableEntity productInfo)
+        public Task UpdateAsync(string userId, AppConfigEntity productInfo)
         {
             throw new NotImplementedException();
         }
@@ -49,7 +44,7 @@ namespace PoC.Azure.Storage.WebApi
             throw new NotImplementedException();
         }
 
-        public Task<List<AzureTableEntity>> GetAllAppConfigsAsync(string accountStorage, string evnName)
+        public Task<List<AppConfigEntity>> GetAllAppConfigsAsync(string accountStorage, string evnName)
         {
             return _repository.GetList(accountStorage, evnName);
         }
@@ -59,7 +54,7 @@ namespace PoC.Azure.Storage.WebApi
             throw new NotImplementedException();
         }
 
-        Task<List<AzureTableEntity>> IAppConfigService.GetAllAppConfigsAsync(string accountStorage, string evnName)
+        Task<List<AppConfigEntity>> IAppConfigService.GetAllAppConfigsAsync(string accountStorage, string evnName)
         {
             return _repository.GetList(accountStorage, evnName);
         }
