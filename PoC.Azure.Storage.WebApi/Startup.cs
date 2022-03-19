@@ -29,6 +29,7 @@ namespace PoC.Azure.Storage.WebApi
             services.AddControllers();
             services.AddSingleton<IAppConfigService, AppConfigService>();
             services.AddScoped<IAppConfigService, AppConfigService>();
+            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             /*services.AddScoped<IAzureTableStorage<AzureTableEntity>>(factory =>
             {
                 return new AzureTableStorage<AzureTableEntity>(

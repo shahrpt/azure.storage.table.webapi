@@ -1,4 +1,5 @@
-﻿using Microsoft.WindowsAzure.Storage;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using System;
 using System.Collections.Generic;
@@ -12,16 +13,10 @@ namespace PoC.Azure.Storage.WebApi
     {
         #region " Public "
 
-        public AzureTableStorage(AzureTableSettings settings)
-        {
-            this.settings = settings;
-        }
-
         public AzureTableStorage()
         {
+            
         }
-
-       
         private async Task<List<T>> GetListInner(string accountStorage, string evnName)
         {
             //Table
@@ -29,7 +24,7 @@ namespace PoC.Azure.Storage.WebApi
 
             //Query
             TableQuery<T> query = new TableQuery<T>()
-                                        .Where(TableQuery.GenerateFilterCondition("PartitionKey",
+                                        .Where(TableQuery.GenerateFilterCondition("ConfigVal",
                                                 QueryComparisons.Equal, evnName));
 
             List<T> results = new List<T>();
@@ -115,6 +110,7 @@ namespace PoC.Azure.Storage.WebApi
         private async Task<CloudTable> GetTableAsync(string accountStorage)
         {
             //Client
+            //var StorageConnectionString = Configuration.GetSection("AzureTable:StorageConnectionString").Value,
             CloudTableClient tableClient = CloudStorageAccount.Parse(accountStorage).CreateCloudTableClient();
 
             //Table
